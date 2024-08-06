@@ -4,6 +4,7 @@ import path from 'path';
 import BlogModel from '@/lib/models/BlogModel'; // Correct import
 import { ConnectDB } from '@/lib/config/db';
 import mongoose from 'mongoose';
+import { promises as fs } from 'fs';
 
 mongoose.set('bufferCommands', false);
 
@@ -13,6 +14,39 @@ const ensureDBConnection = async () => {
         await ConnectDB();
     }
 };
+// API to delete a blog
+
+export async function DELETE(request) {
+    try {
+        const { searchParams } = new URL(request.url);
+        const id = searchParams.get('id');
+
+        if (!id || !/^[0-9a-fA-F]{24}$/.test(id)) {
+            return NextResponse.json({ error: 'Invalid blog ID format' }, { status: 400 });
+        }
+
+        const blog = await BlogModel.findById(id);
+        if (!blog) {
+            return NextResponse.json({ error: 'Blog not found' }, { status: 404 });
+        }
+
+        // Delete the image file
+        try {
+            await fs.unlink(`./public${blog.image}`);
+        } catch (err) {
+            console.error('Error deleting image file:', err);
+            return NextResponse.json({ error: 'Error deleting image file' }, { status: 500 });
+        }
+
+        // Delete the blog document
+        await BlogModel.findByIdAndDelete(id);
+
+        return NextResponse.json({ msg: 'Blog deleted successfully' });
+    } catch (err) {
+        console.error('Error deleting blog:', err);
+        return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+    }
+}
 
 // API endpoint to get all blogs or a specific blog
 export async function GET(request) {

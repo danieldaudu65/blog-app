@@ -2,19 +2,22 @@ import { assets } from '@/assets/assets';
 import Image from 'next/image';
 import React from 'react';
 
-const BlogTableItem = ({ authorImg, title }) => {
+const BlogTableItem = ({ authorImg, title, author,date, deleteBlogs, mongoId }) => {
+
+    const BlogDate = new Date(date)
     return (
         <tr className='bg-white border-b'>
             <th scope='row' className='items-center gap-3 hidden sm:flex px-6 py-4 font-medium text-gray-900 whitespace-nowrap'>
-                <Image src={authorImg ? authorImg : assets.profile_icon} />
+                <Image width={40} height={40} src={ assets.profile_icon} />
+                <p>{author ? author : 'No autor'}</p>
             </th>
             <td className='px-6 py-4'>
                 {title ? title : 'no title'}
             </td>
             <td className='px-6 py-4'>
-                {'11 jun 2024'}
+                {BlogDate.toDateString()}
             </td>
-            <td className='px-6 py-4'>
+            <td onClick={()=>deleteBlogs(mongoId)} className='px-6 py-4 cursor-pointer'>
                 x
             </td>
         </tr>
