@@ -1,7 +1,7 @@
 
 'use client'
-import BlogItem from "@/components/BlogItem";
 import Bloglist from "@/components/Bloglist";
+import Footer from "@/components/Footer";
 import Header from "@/components/Header";
 
 export default function Home() {
@@ -9,6 +9,7 @@ export default function Home() {
     <>
       <Header />
       <Bloglist />
+      <Footer />
     </>
   );
 }
